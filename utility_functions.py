@@ -1,11 +1,11 @@
 # Imports packages
 from os import path
 from random import randint
+from torch import save
 from torch.utils.data import DataLoader
 from torchvision import datasets, transforms
 
-# TODO: Define your transforms for the training, validation, and testing sets
-
+# Function for data loading and transforms
 def load_train_valid_data(data_dir):
 
     train_dir = path.join(data_dir, 'train')
@@ -28,11 +28,11 @@ def load_train_valid_data(data_dir):
             transforms.ToTensor(),
             transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])])
 
-        # TODO: Load the datasets with ImageFolder
+        # Load the datasets with ImageFolder
         train_dataset = datasets.ImageFolder(train_dir, transform = train_data_transform)
         valid_dataset = datasets.ImageFolder(valid_dir, transform = valid_data_transform)
 
-        # TODO: Using the image datasets and the trainforms, define the dataloaders
+        # Using the image datasets and the trainforms, define the dataloaders
         train_dataloader = DataLoader(train_dataset, batch_size=64, shuffle=True)
         valid_dataloader = DataLoader(valid_dataset, batch_size=64, shuffle=False)
 
@@ -42,6 +42,25 @@ def load_train_valid_data(data_dir):
 
     else:
         print('Wrong file path!')
+
+# Function for savin the chceckpoint
+def save_checkpoint(model,
+                    optimizer,
+                    dataset,
+                    model_performance,
+                    filepath = 'checkpoint.pth'):
+    
+    chceckpoint = {'epoches' : model_performance['epoches'],
+                   'train losses' : model_performance['train losses'],
+                   'valid losses' : model_performance['valid losses'],
+                   'model state dict': model.state_dict(),
+                   'optimizer state' : optimizer.state_dict(),
+                   'classes to indices' : dataset.class_to_idx
+                  }
+
+    # save model state
+    save(chceckpoint, filepath)
+    print('Model saved successfully!')
 
 if __name__ == '__main__':
 
