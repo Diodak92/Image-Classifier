@@ -3,16 +3,25 @@ from torch import nn, optim
 import torch.nn.functional as F
 from torchvision import models
 
-resnet18 = models.resnet18(pretrained=True)
+densenet = models.densenet161(pretrained=True)
 alexnet = models.alexnet(pretrained=True)
 vgg16 = models.vgg16(pretrained=True)
-models = {'resnet18': resnet18, 'alexnet': alexnet, 'vgg16': vgg16}
+models = {'densenet': {'model' : densenet, 'in_features' : 2208},
+          'alexnet': {'model' : alexnet, 'in_features' : 9216},
+          'vgg16': {'model' : vgg16, 'in_features' : 25088}}
+
 
 # return selected model and freeze features
-def select_nn_model_arch(archName):
-    my_model = models[archName]
+def select_nn_model_arch(archName, hiddenUnits = 512, classesNumber = 102):
+    my_model = models[archName]['model']
     for param in my_model.parameters():
         param.requires_grad = False
+    
+    my_model.classifier = nn.Sequential(nn.Linear(models[archName]['in_features'], hiddenUnits),
+                                        nn.ReLU(inplace=True),
+                                        nn.Dropout(p=0.3, inplace=False),
+                                        nn.Linear(hiddenUnits, classesNumber),
+                                        nn.LogSoftmax(dim=1))
     return my_model
 
 # define optimizer for neural network classifier and set learning rate
@@ -123,3 +132,10 @@ def train_and_valid_nn(train_dataloader,
               'Validation accuracy: {:.2f}%'.format(accuracy*100.0))
 
     print('Training done!')
+
+if __name__ == '__main__':
+
+    nn_model = select_nn_model_arch('alexnet')
+    print(nn_model.classifier)
+    device = select_device('GPU')
+    print(device)
