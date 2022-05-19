@@ -3,16 +3,30 @@ from torch import nn, optim
 import torch.nn.functional as F
 from torchvision import models
 
+resnet18 = models.resnet18(pretrained=True)
+alexnet = models.alexnet(pretrained=True)
+vgg16 = models.vgg16(pretrained=True)
+models = {'resnet18': resnet18, 'alexnet': alexnet, 'vgg16': vgg16}
+
+# return selected model and freeze features
+def select_nn_model_arch(archName):
+    my_model = models[archName]
+    for param in my_model.parameters():
+        param.requires_grad = False
+    return my_model
 
 # define optimizer for neural network classifier and set learning rate
 def optimizer(nn_model, learningRate=0.001):
     return optim.Adam(nn_model.classifier.parameters(), lr=learningRate)
 
+# function for selecting computing device
 def select_device(device_name):
     if device_name == 'cpu' or 'Cpu' or 'CPU':
         return 'cpu'
     elif device_name == 'gpu' or 'Gpu' or 'GPU':
         return 'cuda' if torch.cuda.is_available() else 'cpu'
+    else:
+        print('ERROR! Unknown option')
 
 # model training
 def train_nn(dataloader, model, loss_fn, optimizer, device):
