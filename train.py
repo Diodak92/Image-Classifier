@@ -5,7 +5,6 @@ from nn_functions import select_nn_model_arch, optimizer, select_device, train_a
 
 # get user input arguments from command line
 input_args = get_input_args()
-#print(input_args)
 
 # check if path is correct to data folder
 try:

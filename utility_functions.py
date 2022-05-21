@@ -2,7 +2,7 @@
 import argparse
 from os import path
 from random import randint
-from torch import save
+from torch import cuda, load, save
 from torch.utils.data import DataLoader
 from torchvision import datasets, transforms
 
@@ -15,7 +15,7 @@ def get_input_args():
                         help='path to the folder of images dataset')
     # get directory to save checkpoint file
     parser.add_argument('--save_dir', type=str, default='checkpoint.pth',
-                        help='set directory to save checkpoint')
+                        help='set directory to save checkpoint file')
     # get CNN model architecture
     parser.add_argument('--arch', type=str, default='vgg16', choices=['alexnet', 'densenet', 'vgg16'],
                         help="CNN model architecture: densenet, alexnet, or vgg16")
@@ -90,6 +90,39 @@ def save_checkpoint(model,
     print('Model saved successfully!')
 
 
+# load a chceckpoint
+def load_checkpoint(model, 
+                    optimizer, 
+                    filepath = 'checkpoint.pth',
+                    print_state = False):
+    
+    '''Load: model performance, model data and optimizer state from file'''
+    
+    if cuda.is_available():
+        state_dict = load(filepath)
+    else:
+        state_dict = load(filepath, map_location='cpu')
+    
+    # load chceckpoint data
+    model_performance = {}
+    model_performance['epoches'] = state_dict['epoches']
+    model_performance['train losses'] = state_dict['train losses']
+    model_performance['valid losses'] = state_dict['valid losses']
+    
+    model.load_state_dict(state_dict['model state dict'],  strict=False)
+    optimizer.load_state_dict(state_dict['optimizer state'])
+    
+    class_to_idx = state_dict['classes to indices']
+    
+    # print state dict
+    if print_state:
+        for i in state_dict.items():
+            print(i, '\n')
+    
+    print('Data has been successfully loaded')
+    return class_to_idx, model_performance
+
+
 if __name__ == '__main__':
 
     train_data, _ = load_train_valid_data('flower_data')
@@ -97,3 +130,6 @@ if __name__ == '__main__':
     print(type(images))
     print(images.shape)
     print(labels.shape)
+
+    input_args = get_input_args()
+    print(input_args)
