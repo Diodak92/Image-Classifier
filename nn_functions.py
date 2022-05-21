@@ -29,13 +29,11 @@ def optimizer(nn_model, learningRate=0.001):
     return optim.Adam(nn_model.classifier.parameters(), lr=learningRate)
 
 # function for selecting computing device
-def select_device(device_name):
-    if device_name == 'cpu' or 'Cpu' or 'CPU':
-        return 'cpu'
-    elif device_name == 'gpu' or 'Gpu' or 'GPU':
+def select_device(device = False):
+    if device:
         return 'cuda' if torch.cuda.is_available() else 'cpu'
     else:
-        print('ERROR! Unknown option')
+        return 'cpu'
 
 # model training
 def train_nn(dataloader, model, loss_fn, optimizer, device):

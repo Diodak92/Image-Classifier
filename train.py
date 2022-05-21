@@ -1,8 +1,12 @@
 # Imports packages
-import argparse
+from click import option
 from torch import nn
-from utility_functions import load_train_valid_data, save_checkpoint
+from utility_functions import get_input_args, load_train_valid_data, save_checkpoint
 from nn_functions import select_nn_model_arch, optimizer, select_device, train_and_valid_nn
+
+input_args = get_input_args()
+print(input_args)
+#print(input_args.gpu)
 
 train_data, valid_data = load_train_valid_data('flower_data')
 
