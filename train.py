@@ -1,5 +1,4 @@
 # Imports packages
-from os import path
 from torch import nn
 from utility_functions import get_input_args, load_train_valid_data, save_checkpoint
 from nn_functions import select_nn_model_arch, optimizer, select_device, train_and_valid_nn
@@ -11,7 +10,7 @@ input_args = get_input_args()
 # check if path is correct to data folder
 try:
     # get training and validation dataloader
-    train_data, valid_data = load_train_valid_data(input_args.dir)
+    train_data, valid_data, class_to_index = load_train_valid_data(input_args.dir)
     # select model architecture optimizer and computation device for training
     nn_model = select_nn_model_arch(input_args.arch)
     optim = optimizer(nn_model, input_args.learning_rate)
@@ -32,7 +31,7 @@ try:
     # save trained model to a file 
     save_checkpoint(nn_model,
                     optim,
-                    train_data,
+                    class_to_index,
                     train_performance,
                     input_args.save_dir)
 

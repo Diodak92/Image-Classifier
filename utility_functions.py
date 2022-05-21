@@ -59,6 +59,8 @@ def load_train_valid_data(data_dir):
         train_dir, transform=train_data_transform)
     valid_dataset = datasets.ImageFolder(
         valid_dir, transform=valid_data_transform)
+    # get clas to indexes
+    class_to_index = train_dataset.class_to_idx
 
     # Using the image datasets and the trainforms, define the dataloaders
     train_dataloader = DataLoader(train_dataset, batch_size=64, shuffle=True)
@@ -66,12 +68,12 @@ def load_train_valid_data(data_dir):
 
     print('Data loaded succesfuly')
 
-    return train_dataloader, valid_dataloader
+    return train_dataloader, valid_dataloader, class_to_index
 
 # Function for savin the chceckpoint
 def save_checkpoint(model,
                     optimizer,
-                    dataset,
+                    class_to_index,
                     model_performance,
                     filepath='checkpoint.pth'):
 
@@ -80,7 +82,7 @@ def save_checkpoint(model,
                    'valid losses': model_performance['valid losses'],
                    'model state dict': model.state_dict(),
                    'optimizer state': optimizer.state_dict(),
-                   'classes to indices': dataset.class_to_idx
+                   'classes to indices': class_to_index
                    }
 
     # save model state
