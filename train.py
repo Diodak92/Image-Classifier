@@ -11,10 +11,14 @@ try:
     # get training and validation dataloader
     train_data, valid_data, class_to_index = load_train_valid_data(input_args.dir)
     # select model architecture optimizer and computation device for training
-    nn_model = select_nn_model_arch(input_args.arch)
+    nn_model = select_nn_model_arch(archName = input_args.arch, 
+                                    hiddenUnits = input_args.hidden_units,
+                                    is_pretrained = True)
     optim = optimizer(nn_model, input_args.learning_rate)
     device = select_device(input_args.gpu)
 
+    # store model architecture and params
+    model_arch = {'model architecture': input_args.arch, 'hidden units': input_args.hidden_units}
     # data container for storing model performance while training
     train_performance = {'epoches': input_args.epochs, 'train losses': [], 'valid losses' : []}
 
@@ -28,7 +32,8 @@ try:
                     train_performance)
 
     # save trained model to a file 
-    save_checkpoint(nn_model,
+    save_checkpoint(model_arch,
+                    nn_model,
                     optim,
                     class_to_index,
                     train_performance,

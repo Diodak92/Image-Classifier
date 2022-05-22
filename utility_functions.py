@@ -3,10 +3,12 @@ import argparse
 import numpy as np
 from os import path
 from random import randint
-from torch import cuda, load, save, transpose
+import torch
 from torch.utils.data import DataLoader
 from torchvision import datasets, transforms
 from PIL import Image
+# import own functions and variables
+from nn_functions import select_nn_model_arch, optimizer 
 
 # Create command line argument parser
 def get_input_args_train():
@@ -73,47 +75,49 @@ def load_train_valid_data(data_dir):
     return train_dataloader, valid_dataloader, class_to_index
 
 # Function for savin the chceckpoint
-def save_checkpoint(model,
+def save_checkpoint(model_arch,
+                    model,
                     optimizer,
                     class_to_index,
                     model_performance,
                     filepath='checkpoint.pth'):
 
-    chceckpoint = {'epoches': model_performance['epoches'],
-                   'train losses': model_performance['train losses'],
-                   'valid losses': model_performance['valid losses'],
+    chceckpoint = {'model_performance': model_performance,
+                   'model architecture' : model_arch,
                    'model state dict': model.state_dict(),
                    'optimizer state': optimizer.state_dict(),
                    'classes to indices': class_to_index
                    }
 
     # save model state
-    save(chceckpoint, filepath)
+    torch.save(chceckpoint, filepath)
     print('Model saved successfully!')
 
 
 # load a chceckpoint
-def load_checkpoint(model, 
-                    optimizer, 
-                    filepath = 'checkpoint.pth',
-                    print_state = False):
+def load_checkpoint(filepath, print_state = False):
     
     '''Load: model performance, model data and optimizer state from file'''
     
-    if cuda.is_available():
-        state_dict = load(filepath)
+    if torch.cuda.is_available():
+        state_dict = torch.load(filepath)
     else:
-        state_dict = load(filepath, map_location='cpu')
+        state_dict = torch.load(filepath, map_location='cpu')
     
     # load chceckpoint data
     model_performance = {}
     model_performance['epoches'] = state_dict['epoches']
     model_performance['train losses'] = state_dict['train losses']
     model_performance['valid losses'] = state_dict['valid losses']
-    
-    model.load_state_dict(state_dict['model state dict'],  strict=False)
-    optimizer.load_state_dict(state_dict['optimizer state'])
-    
+
+    # create nn model and load parameters
+    nn_model = select_nn_model_arch()
+    nn_model.load_state_dict(state_dict['model state dict'],  strict=False)
+    nn_model.eval()
+    # load optimizer
+    optim = optimizer(nn_model)
+    optim.load_state_dict(state_dict['optimizer state'])
+    # load class to indexes
     class_to_idx = state_dict['classes to indices']
     
     # print state dict
@@ -122,7 +126,7 @@ def load_checkpoint(model,
             print(i, '\n')
     
     print('Data has been successfully loaded')
-    return class_to_idx, model_performance
+    return nn_model, optim, class_to_idx, model_performance
 
 # load and process image
 def process_image(image):
@@ -140,8 +144,28 @@ def process_image(image):
                                            transforms.ToTensor(),
                                            transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])])
         
-        im_tensor = transpose(im_transform(im), 1, 1)
+        im_tensor = torch.transpose(im_transform(im), 1, 1)
         return np.array(im_tensor)
+
+# function for predicting image top classes and probabilities
+def predict(image_path, model, topk=5):
+    ''' Predict the class (or classes) of an image using a trained deep learning model.
+    '''
+    # import and convert image to tensor
+    image = torch.tensor(process_image(image_path))
+    # adjust tensor dimentions
+    image = torch.unsqueeze(image, 0)
+    # move tensor to cpu or gpu
+    image = image.to(device = 'cuda' if torch.cuda.is_available() else 'cpu')
+    with torch.no_grad():
+        # set model in evaluation mode
+        model.eval()
+        # get model probabilities
+        prob = torch.exp(model(image))
+    # compute and return top probabilities and classes
+    top_p, top_class = prob.topk(topk, dim=1)
+    
+    return tuple(np.array(top_p).tolist()[0]), tuple(np.array(top_class).tolist()[0])
 
 
 if __name__ == '__main__':

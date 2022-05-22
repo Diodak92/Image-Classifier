@@ -3,26 +3,32 @@ from torch import nn, optim
 import torch.nn.functional as F
 from torchvision import models
 
-densenet = models.densenet161(pretrained=True)
-alexnet = models.alexnet(pretrained=True)
-vgg16 = models.vgg16(pretrained=True)
-models = {'densenet': {'model' : densenet, 'in_features' : 2208},
-          'alexnet': {'model' : alexnet, 'in_features' : 9216},
-          'vgg16': {'model' : vgg16, 'in_features' : 25088}}
-
-
 # return selected model and freeze features
-def select_nn_model_arch(archName, hiddenUnits = 512, classesNumber = 102):
-    my_model = models[archName]['model']
-    for param in my_model.parameters():
+def select_nn_model_arch(archName, hiddenUnits = 512, classesNumber = 102, is_pretrained = False):
+    
+    # sample neural network models
+    densenet = models.densenet161(pretrained = is_pretrained)
+    alexnet = models.alexnet(pretrained = is_pretrained)
+    vgg16 = models.vgg16(pretrained = is_pretrained)
+    
+    # models dict
+    my_models = {'densenet': {'model' : densenet, 'in_features' : 2208},
+                 'alexnet': {'model' : alexnet, 'in_features' : 9216},
+                 'vgg16': {'model' : vgg16, 'in_features' : 25088}}
+    
+    # create and process the selected model 
+    model = my_models[archName]['model']
+    # freeze model features
+    for param in model.parameters():
         param.requires_grad = False
     
-    my_model.classifier = nn.Sequential(nn.Linear(models[archName]['in_features'], hiddenUnits),
+    # create model classifier
+    model.classifier = nn.Sequential(nn.Linear(models[archName]['in_features'], hiddenUnits),
                                         nn.ReLU(inplace=True),
                                         nn.Dropout(p=0.3, inplace=False),
                                         nn.Linear(hiddenUnits, classesNumber),
                                         nn.LogSoftmax(dim=1))
-    return my_model
+    return model
 
 # define optimizer for neural network classifier and set learning rate
 def optimizer(nn_model, learningRate=0.001):
