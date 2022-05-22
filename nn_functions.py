@@ -23,7 +23,7 @@ def select_nn_model_arch(archName, hiddenUnits = 512, classesNumber = 102, is_pr
         param.requires_grad = False
     
     # create model classifier
-    model.classifier = nn.Sequential(nn.Linear(models[archName]['in_features'], hiddenUnits),
+    model.classifier = nn.Sequential(nn.Linear(my_models[archName]['in_features'], hiddenUnits),
                                         nn.ReLU(inplace=True),
                                         nn.Dropout(p=0.3, inplace=False),
                                         nn.Linear(hiddenUnits, classesNumber),

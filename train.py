@@ -18,7 +18,7 @@ try:
     device = select_device(input_args.gpu)
 
     # store model architecture and params
-    model_arch = {'model architecture': input_args.arch, 'hidden units': input_args.hidden_units}
+    model_arch = {'model': input_args.arch, 'hidden units': input_args.hidden_units}
     # data container for storing model performance while training
     train_performance = {'epoches': input_args.epochs, 'train losses': [], 'valid losses' : []}
 

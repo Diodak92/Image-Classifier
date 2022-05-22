@@ -8,7 +8,7 @@ from torch.utils.data import DataLoader
 from torchvision import datasets, transforms
 from PIL import Image
 # import own functions and variables
-from nn_functions import select_nn_model_arch, optimizer 
+from nn_functions import select_nn_model_arch, optimizer, select_device 
 
 # Create command line argument parser
 def get_input_args_train():
@@ -82,7 +82,7 @@ def save_checkpoint(model_arch,
                     model_performance,
                     filepath='checkpoint.pth'):
 
-    chceckpoint = {'model_performance': model_performance,
+    chceckpoint = {'model performance': model_performance,
                    'model architecture' : model_arch,
                    'model state dict': model.state_dict(),
                    'optimizer state': optimizer.state_dict(),
@@ -104,14 +104,10 @@ def load_checkpoint(filepath, print_state = False):
     else:
         state_dict = torch.load(filepath, map_location='cpu')
     
-    # load chceckpoint data
-    model_performance = {}
-    model_performance['epoches'] = state_dict['epoches']
-    model_performance['train losses'] = state_dict['train losses']
-    model_performance['valid losses'] = state_dict['valid losses']
-
     # create nn model and load parameters
-    nn_model = select_nn_model_arch()
+    nn_model = select_nn_model_arch(state_dict['model architecture']['model'],
+                                    state_dict['model architecture']['hidden units'],
+                                    is_pretrained = False)
     nn_model.load_state_dict(state_dict['model state dict'],  strict=False)
     nn_model.eval()
     # load optimizer
@@ -119,6 +115,8 @@ def load_checkpoint(filepath, print_state = False):
     optim.load_state_dict(state_dict['optimizer state'])
     # load class to indexes
     class_to_idx = state_dict['classes to indices']
+    # load model performance
+    model_performance = state_dict['model performance']
     
     # print state dict
     if print_state:
@@ -137,7 +135,7 @@ def process_image(image):
     mean = np.array([0.485, 0.456, 0.406])
     std = np.array([0.229, 0.224, 0.225])
     
-    # TODO: Process a PIL image for use in a PyTorch model
+    # Process a PIL image for use in a PyTorch model
     with Image.open(image) as im:
         im_transform = transforms.Compose([transforms.Resize(256),
                                            transforms.CenterCrop(224),
@@ -148,7 +146,7 @@ def process_image(image):
         return np.array(im_tensor)
 
 # function for predicting image top classes and probabilities
-def predict(image_path, model, topk=5):
+def predict(image_path, model, topk=5, gpu = False):
     ''' Predict the class (or classes) of an image using a trained deep learning model.
     '''
     # import and convert image to tensor
@@ -156,7 +154,8 @@ def predict(image_path, model, topk=5):
     # adjust tensor dimentions
     image = torch.unsqueeze(image, 0)
     # move tensor to cpu or gpu
-    image = image.to(device = 'cuda' if torch.cuda.is_available() else 'cpu')
+    device = select_device(gpu)
+    image = image.to(device)
     with torch.no_grad():
         # set model in evaluation mode
         model.eval()
@@ -165,6 +164,8 @@ def predict(image_path, model, topk=5):
     # compute and return top probabilities and classes
     top_p, top_class = prob.topk(topk, dim=1)
     
+    print('Using {} device\n'.format(device))
+
     return tuple(np.array(top_p).tolist()[0]), tuple(np.array(top_class).tolist()[0])
 
 
