@@ -1,13 +1,15 @@
 # Imports packages
 import argparse
+import numpy as np
 from os import path
 from random import randint
-from torch import cuda, load, save
+from torch import cuda, load, save, transpose
 from torch.utils.data import DataLoader
 from torchvision import datasets, transforms
+from PIL import Image
 
 # Create command line argument parser
-def get_input_args():
+def get_input_args_train():
     parser = argparse.ArgumentParser(
         description='Train a neural network on a data set and save the model to a checkpoint file')
     # get directory of images folder
@@ -122,6 +124,25 @@ def load_checkpoint(model,
     print('Data has been successfully loaded')
     return class_to_idx, model_performance
 
+# load and process image
+def process_image(image):
+    ''' Scales, crops, and normalizes a PIL image for a PyTorch model,
+        returns an Numpy array
+    '''
+    
+    mean = np.array([0.485, 0.456, 0.406])
+    std = np.array([0.229, 0.224, 0.225])
+    
+    # TODO: Process a PIL image for use in a PyTorch model
+    with Image.open(image) as im:
+        im_transform = transforms.Compose([transforms.Resize(256),
+                                           transforms.CenterCrop(224),
+                                           transforms.ToTensor(),
+                                           transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])])
+        
+        im_tensor = transpose(im_transform(im), 1, 1)
+        return np.array(im_tensor)
+
 
 if __name__ == '__main__':
 
@@ -131,5 +152,5 @@ if __name__ == '__main__':
     print(images.shape)
     print(labels.shape)
 
-    input_args = get_input_args()
+    input_args = get_input_args_train()
     print(input_args)

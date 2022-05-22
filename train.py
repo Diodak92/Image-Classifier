@@ -1,10 +1,10 @@
 # Imports packages
 from torch import nn
-from utility_functions import get_input_args, load_train_valid_data, save_checkpoint
+from utility_functions import get_input_args_train, load_train_valid_data, save_checkpoint
 from nn_functions import select_nn_model_arch, optimizer, select_device, train_and_valid_nn
 
 # get user input arguments from command line
-input_args = get_input_args()
+input_args = get_input_args_train()
 
 # check if path is correct to data folder
 try:

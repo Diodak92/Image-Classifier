@@ -104,7 +104,7 @@ def train_and_valid_nn(train_dataloader,
                        device,
                        model_performance):
 
-    print('Neural network training has begun!\nBe patient it may take a while...\n')
+    print('Neural network training has started!\nBe patient it may take a while...\n')
     print('Using {} device\n'.format(device))
 
     # move model to GPU or CPU
