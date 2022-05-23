@@ -1,7 +1,7 @@
 # Imports packages
 import argparse
 
-# Create command line argument parser
+# Create command line argument parser for train script
 def get_input_args_train():
     parser = argparse.ArgumentParser(
         description='Train a neural network on a data set and save the model to a checkpoint file')
@@ -29,7 +29,33 @@ def get_input_args_train():
 
     return parser.parse_args()
 
+
+# Create command line argument parser for predict script
+def get_input_args_predict():
+    parser = argparse.ArgumentParser(
+        description='The program predicts the object in a given image')
+    # get directory of image to predict
+    parser.add_argument('dir', type=str,
+                        help='path to the image')
+    # get directory to save checkpoint file
+    parser.add_argument('checkpoint', type=str, default='densenet_e20.pth',
+                        help='Path to load the learned neural network model')
+    # get number of most likely classes to return
+    parser.add_argument('--top_k', type=int, default=5,
+                        help='Return top K most likely classes with the probabilities')
+    # get learning rate
+    parser.add_argument('-cn', '--category_names', type=str,
+                        help='Select JSON file for mapping of categories to real names')
+    
+    # select gpu as computation device
+    parser.add_argument('--gpu', action='store_true',
+                        help='move computations to gpu')
+
+    return parser.parse_args()
+
 if __name__ == '__main__':
 
-    input_args = get_input_args_train()
-    print(input_args)
+    input_args_train = get_input_args_train()
+    input_args_predict = get_input_args_predict()
+    print(input_args_train)
+    print(input_args_predict)
