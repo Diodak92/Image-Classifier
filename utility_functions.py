@@ -1,7 +1,8 @@
 # Imports packages
-import numpy as np
 from os import path
 from random import randint
+import json
+import numpy as np
 import torch
 from torch.utils.data import DataLoader
 from torchvision import datasets, transforms
@@ -139,6 +140,11 @@ def predict(image_path, model, topk=5, gpu = False):
 
     return tuple(np.array(top_p).tolist()[0]), tuple(np.array(top_class).tolist()[0])
 
+# open and load json file that maps the class values to other category  
+def map_indexes(file_path):
+    with open(file_path, 'r') as f:
+        cat_to_name = json.load(f)
+        return cat_to_name
 
 if __name__ == '__main__':
 
