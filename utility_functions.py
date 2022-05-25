@@ -95,7 +95,7 @@ def load_checkpoint(filepath, print_state = False):
         for i in state_dict.items():
             print(i, '\n')
     
-    print('Data has been successfully loaded')
+    print('Checkpoint file has been successfully loaded!')
     return nn_model, optim, class_to_idx, model_performance
 
 # load and process image
