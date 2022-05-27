@@ -10,7 +10,7 @@ def get_input_args_train():
                         help='path to the folder of images dataset')
     # get directory to save checkpoint file
     parser.add_argument('--save_dir', type=str, default='checkpoint.pth',
-                        help='set directory to save checkpoint file')
+                        help='set directory to save checkpoint file ex: "cwd/filepath/filename"')
     # get CNN model architecture
     parser.add_argument('--arch', type=str, default='vgg16', choices=['alexnet', 'densenet', 'vgg16'],
                         help="CNN model architecture: densenet, alexnet, or vgg16")

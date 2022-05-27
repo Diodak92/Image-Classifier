@@ -1,5 +1,5 @@
 # Imports packages
-from os import path
+from os import getcwd, path
 from random import randint
 import json
 import numpy as np
@@ -42,7 +42,7 @@ def load_train_valid_data(data_dir):
     train_dataloader = DataLoader(train_dataset, batch_size=64, shuffle=True)
     valid_dataloader = DataLoader(valid_dataset, batch_size=64, shuffle=False)
 
-    print('Data loaded succesfuly')
+    print('Data loaded succesfuly from {}'.format(path.join(getcwd(), data_dir)))
 
     return train_dataloader, valid_dataloader, class_to_index
 
@@ -52,7 +52,7 @@ def save_checkpoint(model_arch,
                     optimizer,
                     class_to_index,
                     model_performance,
-                    filepath='checkpoint.pth'):
+                    filename='checkpoint'):
 
     chceckpoint = {'model performance': model_performance,
                    'model architecture' : model_arch,
@@ -62,8 +62,9 @@ def save_checkpoint(model_arch,
                    }
 
     # save model state
-    torch.save(chceckpoint, filepath)
-    print('Model saved successfully!')
+    filename = path.join('{}_e{}.pth'.format(filename, model_performance['epoches']))
+    torch.save(chceckpoint, filename)
+    print('Model saved successfully in {}'.format(filename))
 
 
 # load a chceckpoint
@@ -95,7 +96,7 @@ def load_checkpoint(filepath, print_state = False):
         for i in state_dict.items():
             print(i, '\n')
     
-    print('Checkpoint file has been successfully loaded!')
+    print('Checkpoint {} has been successfully loaded!'.format(filepath))
     return nn_model, optim, class_to_idx, model_performance
 
 # load and process image
