@@ -135,7 +135,10 @@ def predict(image_path, model, topk=5, gpu = False):
         # get model probabilities
         prob = torch.exp(model(image))
     # compute and return top probabilities and classes
-    top_p, top_class = prob.topk(topk, dim=1)
+    if topk:
+        top_p, top_class = prob.topk(topk, dim=1)
+    else:
+        top_p, top_class = prob.topk(1, dim=1)
     
     print('Using {} device\n'.format(device))
 

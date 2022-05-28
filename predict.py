@@ -31,6 +31,7 @@ else:
         
         # print results
         print('The file photo: {} probably contains category: {}'.format(input_args.dir, top_class[0]))
-        print('Top classes: {}\nTop probabilities: {}\n'.format(list(top_class), [float('{0:0.2}'.format(i)) for i in top_p]))
+        if input_args.top_k:
+            print('Top classes: {}\nTop probabilities: {}\n'.format(list(top_class), [float('{0:0.2}'.format(i)) for i in top_p]))
     except(NameError, FileNotFoundError):
         print('Wrong path to image or file incompatible!')

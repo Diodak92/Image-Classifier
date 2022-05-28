@@ -41,7 +41,7 @@ def get_input_args_predict():
     parser.add_argument('checkpoint', type=str, default='densenet_e20.pth',
                         help='path to load the learned neural network model')
     # get number of most likely classes to return
-    parser.add_argument('--top_k', type=int, default=5,
+    parser.add_argument('--top_k', type=int,
                         help='return top K most likely classes with the probabilities')
     # get learning rate
     parser.add_argument('-cn', '--category_names', type=str,
