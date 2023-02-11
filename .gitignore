@@ -1,4 +1,5 @@
 .github/
 .ipynb_checkpoints/
 __pycache__/
-
+env/
+flower_data\.DS_Store
