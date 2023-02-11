@@ -1,7 +1,8 @@
 import torch
 from torch import nn, optim
-import torch.nn.functional as F
 from torchvision import models as M
+from tqdm import tqdm
+
 
 # return selected model and freeze features
 def select_nn_model_arch(archName, hiddenUnits = 512, classesNumber = 102):
@@ -42,7 +43,7 @@ def select_device(device = False):
         return 'cpu'
 
 # model training
-def train_nn(dataloader, model, loss_fn, optimizer, device):
+def train_nn(dataloader, model, loss_fn, optimizer, device, training_progress):
 
     # store running loss
     running_loss = 0
@@ -50,8 +51,10 @@ def train_nn(dataloader, model, loss_fn, optimizer, device):
     # set model in training mode
     model.train()
 
-    for images, labels in dataloader:
+    for _, data in enumerate(tqdm(dataloader, desc = 'Epoch: {}/{}'.\
+                                  format(training_progress['epoch']+1, training_progress['epoches']))):
 
+        images, labels = data
         # move computations
         images, labels = images.to(device), labels.to(device)
 
@@ -120,8 +123,10 @@ def train_and_valid_nn(train_dataloader,
 
     for epoch in range(epochs):
 
+        training_progress = {"epoch" : epoch, 'epoches' : epochs}
+
         train_loss = train_nn(train_dataloader, model,
-                              criterion, optimizer, device)
+                              criterion, optimizer, device, training_progress)
         valid_data = test_nn(valid_dataloader, model, criterion, device)
 
         (valid_loss, accuracy) = valid_data
@@ -130,8 +135,7 @@ def train_and_valid_nn(train_dataloader,
         model_performance['train losses'].append(train_loss)
         model_performance['valid losses'].append(valid_loss)
 
-        print('Epoch: {}/{};'.format(epoch+1, epochs),
-              'Train loss: {:.3f};'.format(train_loss),
+        print('Train loss: {:.3f};'.format(train_loss),
               'Validation loss: {:.3f};'.format(valid_loss),
               'Validation accuracy: {:.2f}%'.format(accuracy*100.0))
 
