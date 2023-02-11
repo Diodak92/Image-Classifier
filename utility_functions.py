@@ -17,7 +17,7 @@ def load_train_valid_data(data_dir):
     valid_dir = path.join(data_dir, 'valid')
 
     train_data_transform = transforms.Compose([
-        transforms.RandomRotation(randint(0, 30)),
+        transforms.RandomRotation(randint(0, 20)),
         transforms.RandomHorizontalFlip(),
         transforms.RandomVerticalFlip(),
         transforms.RandomResizedCrop(224),

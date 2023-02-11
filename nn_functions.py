@@ -1,15 +1,15 @@
 import torch
 from torch import nn, optim
 import torch.nn.functional as F
-from torchvision import models
+from torchvision import models as M
 
 # return selected model and freeze features
-def select_nn_model_arch(archName, hiddenUnits = 512, classesNumber = 102, is_pretrained = False):
+def select_nn_model_arch(archName, hiddenUnits = 512, classesNumber = 102):
     
     # sample neural network models
-    densenet = models.densenet161(pretrained = is_pretrained)
-    alexnet = models.alexnet(pretrained = is_pretrained)
-    vgg16 = models.vgg16(pretrained = is_pretrained)
+    densenet = M.densenet161(weights = M.DenseNet161_Weights.DEFAULT)
+    alexnet = M.alexnet(weights = M.AlexNet_Weights.DEFAULT)
+    vgg16 = M.vgg16(weights = M.VGG16_Weights.DEFAULT)
     
     # models dict
     my_models = {'densenet': {'model' : densenet, 'in_features' : 2208},

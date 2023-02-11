@@ -12,9 +12,7 @@ try:
     # get training and validation dataloader
     train_data, valid_data, class_to_index = load_train_valid_data(input_args.dir)
     # select model architecture optimizer and computation device for training
-    nn_model = select_nn_model_arch(archName = input_args.arch, 
-                                    hiddenUnits = input_args.hidden_units,
-                                    is_pretrained = True)
+    nn_model = select_nn_model_arch(archName = input_args.arch, hiddenUnits = input_args.hidden_units)
     optim = optimizer(nn_model, input_args.learning_rate)
     device = select_device(input_args.gpu)
 
