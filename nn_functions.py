@@ -2,14 +2,9 @@ import torch
 from torch import nn, optim
 from torchvision import models as M
 from tqdm import tqdm
-
-#class Net(nn.Sequential):
-#    def __init__(self):
-#        super().__init__()
-
     
 # return selected model and freeze features
-def select_nn_model_arch(archName, hiddenUnits = 512, classesNumber = 102):
+def select_nn_model_arch(archName, hiddenUnits = 512, classesNumber = 10):
     
     # sample neural network models
     densenet = M.densenet161(weights = M.DenseNet161_Weights.DEFAULT)
@@ -55,9 +50,10 @@ def train_nn(dataloader, model, loss_fn, optimizer, device, training_progress):
     # set model in training mode
     model.train()
 
-    for _, data in enumerate(tqdm(dataloader, desc = 'Epoch: {}/{}'.\
-                                  format(training_progress['epoch']+1, training_progress['epoches']),
-                                  total = len(dataloader)-1)):
+    for _, data in enumerate(tqdm(dataloader,
+                                  desc = 'Epoch: {}/{}'.format(training_progress['epoch']+1,
+                                                               training_progress['epoches']),
+                                  total = len(dataloader))):
 
         images, labels = data
         # move computations

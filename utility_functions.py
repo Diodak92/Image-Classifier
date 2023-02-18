@@ -1,5 +1,5 @@
 # Imports packages
-from os import getcwd, path
+from os import getcwd, listdir, path
 from random import randint
 import json
 import numpy as np
@@ -15,6 +15,9 @@ def load_train_valid_data(data_dir):
 
     train_dir = path.join(data_dir, 'train')
     valid_dir = path.join(data_dir, 'valid')
+
+    # detect number of classes form train directory
+    n_classes = len(listdir(train_dir))
 
     train_data_transform = transforms.Compose([
         transforms.RandomRotation(randint(0, 20)),
@@ -44,7 +47,8 @@ def load_train_valid_data(data_dir):
 
     print('Data loaded succesfuly from {}'.format(path.join(getcwd(), data_dir)))
 
-    return train_dataloader, valid_dataloader, class_to_index
+    return train_dataloader, valid_dataloader, class_to_index, n_classes
+
 
 # Function for savin the chceckpoint
 def save_checkpoint(model_arch,

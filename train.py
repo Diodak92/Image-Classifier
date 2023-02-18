@@ -10,9 +10,14 @@ input_args = get_input_args_train()
 # check if path is correct to data folder
 try:
     # get training and validation dataloader
-    train_data, valid_data, class_to_index = load_train_valid_data(input_args.dir)
+    train_data, valid_data, class_to_index, n_classes = load_train_valid_data(input_args.dir)
+    # auto detect number of classes
+    classes = input_args.dir
+    print(classes)
     # select model architecture optimizer and computation device for training
-    nn_model = select_nn_model_arch(archName = input_args.arch, hiddenUnits = input_args.hidden_units)
+    nn_model = select_nn_model_arch(archName = input_args.arch,
+                                    hiddenUnits = input_args.hidden_units,
+                                    classesNumber = n_classes)
     optim = optimizer(nn_model, input_args.learning_rate)
     device = select_device(input_args.gpu)
 
