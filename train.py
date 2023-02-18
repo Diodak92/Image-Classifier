@@ -11,9 +11,6 @@ input_args = get_input_args_train()
 try:
     # get training and validation dataloader
     train_data, valid_data, class_to_index, n_classes = load_train_valid_data(input_args.dir)
-    # auto detect number of classes
-    classes = input_args.dir
-    print(classes)
     # select model architecture optimizer and computation device for training
     nn_model = select_nn_model_arch(archName = input_args.arch,
                                     hiddenUnits = input_args.hidden_units,

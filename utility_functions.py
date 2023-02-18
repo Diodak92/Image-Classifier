@@ -16,9 +16,6 @@ def load_train_valid_data(data_dir):
     train_dir = path.join(data_dir, 'train')
     valid_dir = path.join(data_dir, 'valid')
 
-    # detect number of classes form train directory
-    n_classes = len(listdir(train_dir))
-
     train_data_transform = transforms.Compose([
         transforms.RandomRotation(randint(0, 20)),
         transforms.RandomHorizontalFlip(),
@@ -46,6 +43,10 @@ def load_train_valid_data(data_dir):
     valid_dataloader = DataLoader(valid_dataset, batch_size=64, shuffle=False)
 
     print('Data loaded succesfuly from {}'.format(path.join(getcwd(), data_dir)))
+    
+    # detect number of classes form train directory
+    n_classes = len(listdir(train_dir))
+    print('\nDetected number of classes: {}'.format(n_classes))
 
     return train_dataloader, valid_dataloader, class_to_index, n_classes
 
