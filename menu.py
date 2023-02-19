@@ -9,7 +9,7 @@ def get_input_args_train():
     parser.add_argument('dir', type=str, default='flowers',
                         help='path to the folder of images dataset')
     # get directory to save checkpoint file
-    parser.add_argument('--save_dir', type=str, default='checkpoint.pth',
+    parser.add_argument('-s', '--save_dir', type=str, default='checkpoint.pth',
                         help='set directory to save checkpoint file ex: "cwd/filepath/filename"')
     # get CNN model architecture
     parser.add_argument('--arch', type=str, default='vgg16', choices=['alexnet', 'densenet', 'vgg16'],
@@ -25,7 +25,7 @@ def get_input_args_train():
                         help='set number of epoches')
     # select gpu as computation device
     parser.add_argument('--gpu', action='store_true',
-                        help='move computations to gpu')
+                        help='Accelerate the learning by moving computation to the GPU')
 
     return parser.parse_args()
 
@@ -49,6 +49,6 @@ def get_input_args_predict():
     
     # select gpu as computation device
     parser.add_argument('--gpu', action='store_true',
-                        help='move computations to gpu')
+                        help='Accelerate image recognition by moving computation to the GPU ')
 
     return parser.parse_args()
