@@ -1,3 +1,4 @@
+import numpy as np
 import torch
 from torch import nn, optim
 from torchvision import models as M
@@ -141,6 +142,7 @@ def train_and_valid_nn(train_dataloader,
               'Validation accuracy: {:.2f}%'.format(accuracy*100.0))
 
     print('Training done!')
+
 
 if __name__ == '__main__':
 

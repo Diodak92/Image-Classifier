@@ -104,25 +104,6 @@ def load_checkpoint(filepath, print_state = False):
     print('Checkpoint {} has been successfully loaded!'.format(filepath))
     return nn_model, optim, class_to_idx, model_performance
 
-# load and process image
-def process_image(image):
-    ''' Scales, crops, and normalizes a PIL image for a PyTorch model,
-        returns an Numpy array
-    '''
-    
-    mean = np.array([0.485, 0.456, 0.406])
-    std = np.array([0.229, 0.224, 0.225])
-    
-    # Process a PIL image for use in a PyTorch model
-    with Image.open(image) as im:
-        im_transform = transforms.Compose([transforms.Resize(256),
-                                           transforms.CenterCrop(224),
-                                           transforms.ToTensor(),
-                                           transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])])
-        
-        im_tensor = torch.transpose(im_transform(im), 1, 1)
-        return np.array(im_tensor)
-
 # function for predicting image top classes and probabilities
 def predict(image_path, model, topk=5, gpu = False):
     ''' Predict the class (or classes) of an image using a trained deep learning model.
@@ -148,6 +129,25 @@ def predict(image_path, model, topk=5, gpu = False):
     print('Using {} device\n'.format(device))
 
     return tuple(np.array(top_p).tolist()[0]), tuple(np.array(top_class).tolist()[0])
+
+# load and process image
+def process_image(image):
+    ''' Scales, crops, and normalizes a PIL image for a PyTorch model,
+        returns an Numpy array
+    '''
+    
+    mean = [0.485, 0.456, 0.406]
+    std = [0.229, 0.224, 0.225]
+    
+    # Process a PIL image for use in a PyTorch model
+    with Image.open(image) as im:
+        im_transform = transforms.Compose([transforms.Resize(256),
+                                           transforms.CenterCrop(224),
+                                           transforms.ToTensor(),
+                                           transforms.Normalize(mean=mean, std=std)])
+        
+        im_tensor = torch.transpose(im_transform(im), 1, 1)
+        return np.array(im_tensor)
 
 # open and load json file that maps the class values to other category  
 def map_indexes(file_path):
