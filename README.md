@@ -31,11 +31,24 @@ The script now supports three different models: [AlexNet](https://paperswithcode
 `--arch {alexnet, densenet, vgg16}`\
 Example usage: \
 `python train.py flower_data --arch densenet`
-- Set directory to save checkpoint file\
+- Select learning rate (optimizer step size on each iteration): $\alpha$ < 1 \
+Default value: $\alpha$ = 0.001\
+`-lr, --learning_rate `\
+Example usage: \
+`python train.py flower_data -lr 0.005`
+- Set the number of hidden units in classifier (default: 512)\
+`-hu, --hidden_units`\
+Example usage: \
+`python train.py flower_data --hidden_units 256`
+- Choose the number of epochs to train (default: 20)\
+`-e, --epochs`\
+Example usage: \
+`python train.py flower_data -e 50`
+- Set directory to save checkpoint file (default: cwd\checkpoint.pth)\
 `-s, --save_dir`\
 The file name must end with an extension `.pt` or `.pth`\
 Example usage: \
-`python train.py flower_data  C:\Users\Tomasz\Desktop\Image-Classifier\alexnet.pt`
+`python train.py flower_data --save_dir C:\Users\Tomasz\Desktop\Image-Classifier\alexnet.pt`
 
 - Accelerate the learning by moving computation to the GPU\
 `--gpu`\
