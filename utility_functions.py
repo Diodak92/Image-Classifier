@@ -11,7 +11,7 @@ from PIL import Image
 from nn_functions import select_nn_model_arch, optimizer, select_device 
 
 # Function for data loading and transforms
-def load_train_valid_data(data_dir):
+def load_train_valid_data(data_dir, batch_size = 64):
 
     train_dir = path.join(data_dir, 'train')
     valid_dir = path.join(data_dir, 'valid')
@@ -39,8 +39,8 @@ def load_train_valid_data(data_dir):
     class_to_index = train_dataset.class_to_idx
 
     # Using the image datasets and the trainforms, define the dataloaders
-    train_dataloader = DataLoader(train_dataset, batch_size=64, shuffle=True)
-    valid_dataloader = DataLoader(valid_dataset, batch_size=64, shuffle=False)
+    train_dataloader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
+    valid_dataloader = DataLoader(valid_dataset, batch_size=batch_size, shuffle=False)
 
     print('Data loaded succesfuly from {}'.format(path.join(getcwd(), data_dir)))
     

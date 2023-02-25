@@ -2,4 +2,5 @@
 .ipynb_checkpoints/
 __pycache__/
 env/
+.DS_Store
 flower_data\.DS_Store
